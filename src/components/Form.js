@@ -9,7 +9,7 @@ const useStyles = makeStyles({
     justifyContent: "center",
     alignContent: "center",
   },
-  nameCont: {
+  row: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     height: "28px",
     textAlign: "center",
   },
-  outerCont: {
+  column: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -41,9 +41,9 @@ const useStyles = makeStyles({
     justifyContent: "center",
     textAlign: "center",
   },
-  termsCont: {
+  rowTerms: {
     width: "100%",
-    marginBottom: "20px",
+    marginBottom: "30px",
     marginTop: "40px",
     display: "flex",
     flexDirection: "row",
@@ -99,7 +99,7 @@ export default function Form(props) {
   };
   return (
     <form autoComplete="off" className={classes.root} onSubmit={formSubmit}>
-      <div className={classes.nameCont}>
+      <div className={classes.row}>
         <div>
           <label htmlFor="firstName" className={classes.label}>
             <span className={classes.span}>What is your first name?</span>
@@ -127,8 +127,7 @@ export default function Form(props) {
           />
         </div>
       </div>
-
-      <div className={classes.outerCont}>
+      <div className={classes.column}>
         <label htmlFor="email" className={classes.label}>
           <span className={classes.span}>
             Please enter your email address now.
@@ -144,7 +143,7 @@ export default function Form(props) {
           className={classes.input}
         />
       </div>
-      <div className={classes.outerCont}>
+      <div className={classes.column}>
         <label htmlFor="password" className={classes.label}>
           <span className={classes.span}>Create a password.</span>
         </label>
@@ -158,7 +157,7 @@ export default function Form(props) {
           className={classes.input}
         />
       </div>
-      <div className={classes.termsCont}>
+      <div className={classes.rowTerms}>
         <label htmlFor="terms_of_service" className={classes.termsLabel}>
           {"Do you agree to the"}
           <br />
@@ -172,7 +171,7 @@ export default function Form(props) {
           />
         </label>
       </div>
-      <div>
+      <div className={classes.column}>
         <label htmlFor="submit" className={classes.label} />
         <button
           id="submit"
