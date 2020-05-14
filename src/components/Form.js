@@ -3,11 +3,21 @@ import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
-    width: "300px",
+    width: "500px",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignContent: "center",
+  },
+  nameCont: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputName: {
+    width: "75%",
+    height: "28px",
+    textAlign: "center",
   },
   outerCont: {
     display: "flex",
@@ -22,7 +32,7 @@ const useStyles = makeStyles({
     fontSize: "1px",
   },
   input: {
-    width: "80%",
+    width: "50%",
     height: "28px",
     marginBottom: "10px",
     marginTop: "10px",
@@ -32,19 +42,26 @@ const useStyles = makeStyles({
     textAlign: "center",
   },
   termsCont: {
+    width: "100%",
     marginBottom: "20px",
     marginTop: "40px",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
   },
-  terms: {
-    fontSize: "24px",
+  termsLabel: {
+    width: "75%",
+    fontSize: "22px",
+    margin: "auto",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
   },
   submit: {
     marginTop: "20px",
-    width: "48%",
+    width: "28%",
     height: "32px",
     backgroundColor: "lightslategrey",
     border: "2px single  #998877",
@@ -54,7 +71,8 @@ const useStyles = makeStyles({
 
 export default function Form(props) {
   const [formState, setFormState] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     terms_of_service: "",
@@ -81,19 +99,35 @@ export default function Form(props) {
   };
   return (
     <form autoComplete="off" className={classes.root} onSubmit={formSubmit}>
-      <div className={classes.outerCont}>
-        <label htmlFor="name" className={classes.label}>
-          <span className={classes.span}>What is your name?</span>
-        </label>
-        <input
-          id="name"
-          name="name"
-          placeholder="Enter your name:"
-          value={formState.name}
-          onChange={inputChange}
-          className={classes.input}
-        />
+      <div className={classes.nameCont}>
+        <div>
+          <label htmlFor="firstName" className={classes.label}>
+            <span className={classes.span}>What is your first name?</span>
+          </label>
+          <input
+            id="name"
+            name="firstName"
+            placeholder="Enter your first name:"
+            value={formState.firstName}
+            onChange={inputChange}
+            className={classes.inputName}
+          />
+        </div>
+        <div>
+          <label htmlFor="lastName" className={classes.label}>
+            <span className={classes.span}>What is your name?</span>
+          </label>
+          <input
+            id="name"
+            name="lastName"
+            placeholder="Enter your last name:"
+            value={formState.lastName}
+            onChange={inputChange}
+            className={classes.inputName}
+          />
+        </div>
       </div>
+
       <div className={classes.outerCont}>
         <label htmlFor="email" className={classes.label}>
           <span className={classes.span}>
@@ -103,6 +137,7 @@ export default function Form(props) {
         <input
           id="email"
           name="email"
+          type="email"
           placeholder="Enter your email address:"
           value={formState.email}
           onChange={inputChange}
@@ -116,6 +151,7 @@ export default function Form(props) {
         <input
           id="password"
           name="password"
+          type="password"
           placeholder="Create a password:"
           value={formState.name}
           onChange={inputChange}
@@ -123,16 +159,18 @@ export default function Form(props) {
         />
       </div>
       <div className={classes.termsCont}>
-        <label htmlFor="terms_of_service" className={classes.terms}>
-          {`Do you agree to the\r\nTerms of Service?:`}
+        <label htmlFor="terms_of_service" className={classes.termsLabel}>
+          {"Do you agree to the"}
+          <br />
+          {"Terms of Service?"}
+          <input
+            type="checkbox"
+            id="terms_of_service"
+            name="terms_of_service"
+            value={formState.terms_of_service}
+            onChange={inputChange}
+          />
         </label>
-        <input
-          type="checkbox"
-          id="terms_of_service"
-          name="terms_of_service"
-          value={formState.terms_of_service}
-          onChange={inputChange}
-        />
       </div>
       <div>
         <label htmlFor="submit" className={classes.label} />
