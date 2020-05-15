@@ -88,13 +88,15 @@ const formSchema = yup.object().shape({
 });
 
 export default function Form(props) {
-  const [formState, setFormState] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    terms: false,
-  });
+  const [formState, setFormState] = useState([
+    {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      terms: false,
+    },
+  ]);
 
   const [errors, setErrors] = useState({
     firstName: "",
@@ -104,8 +106,11 @@ export default function Form(props) {
     terms: "",
   });
 
-  const classes = useStyles();
+  const [users, setUsers] = useState([]);
+  //console.log("user state:", users);
 
+  const classes = useStyles();
+  const submit = (newUser) => setUsers([...formState, newUser]);
   const formSubmit = (ev) => {
     ev.preventDefault();
     console.log("Form submitted!");
@@ -113,7 +118,12 @@ export default function Form(props) {
     axios
       .post("https://reqres.in/api/users", formState)
       .then((res) => {
-        console.log(res);
+        console.log(res.data);
+        let resData = res.data;
+        console.log("resData value:", resData);
+        console.log("before:", users);
+        submit(formState);
+        console.log("after", users);
       })
       .catch((err) => {
         console.log(err);
