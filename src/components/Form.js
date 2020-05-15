@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core";
+import * as yup from "yup";
+import axios from "axios";
 
 const useStyles = makeStyles({
   root: {
@@ -13,11 +15,6 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-  },
-  inputName: {
-    width: "75%",
-    height: "28px",
-    textAlign: "center",
   },
   column: {
     display: "flex",
@@ -39,7 +36,6 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    textAlign: "center",
   },
   rowTerms: {
     width: "100%",
@@ -48,16 +44,24 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
   },
   termsLabel: {
-    width: "75%",
+    width: "55%",
     fontSize: "22px",
-    margin: "auto",
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  termsInput: {
+    width: "40%",
+    display: "flex",
     alignItems: "center",
     justifyContent: "space-evenly",
+  },
+  finePrint: {
+    fontSize: "5px",
   },
   submit: {
     marginTop: "20px",
@@ -67,6 +71,20 @@ const useStyles = makeStyles({
     border: "2px single  #998877",
     borderRadius: "5px",
   },
+  error: {
+    color: "red",
+    fontSize: "14px",
+    margin: "0",
+    padding: "0",
+  },
+});
+
+const formSchema = yup.object().shape({
+  firstName: yup.string().required("Please enter your first name"),
+  lastName: yup.string().required(),
+  email: yup.string().email().required("You'll need an email"),
+  password: yup.string().required("Password neccessary"),
+  terms: yup.boolean("Agree.").oneOf([true], "Agree."),
 });
 
 export default function Form(props) {
@@ -75,8 +93,15 @@ export default function Form(props) {
     lastName: "",
     email: "",
     password: "",
-    terms_of_service: "",
-    submit: "",
+    terms: false,
+  });
+
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    terms: "",
   });
 
   const classes = useStyles();
@@ -84,48 +109,86 @@ export default function Form(props) {
   const formSubmit = (ev) => {
     ev.preventDefault();
     console.log("Form submitted!");
+
+    axios
+      .post("https://reqres.in/api/users", formState)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     setFormState({
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
-      terms_of_service: "",
-      submit: "",
+      terms: false,
     });
   };
 
+  const validate = (ev) => {
+    yup
+      .reach(formSchema, ev.target.name)
+      .validate(ev.target.value)
+      .then((valid) => {
+        setErrors({
+          ...errors,
+          [ev.target.name]: "",
+        });
+      })
+      .catch((err) => {
+        console.log(err.errors);
+        setErrors({
+          ...errors,
+          [ev.target.name]: err.errors[0],
+        });
+      });
+  };
+
   const inputChange = (ev) => {
-    setFormState(ev.target.value);
-    console.log(ev.target.value);
+    ev.persist();
+    validate(ev);
+
+    let value =
+      ev.target.type === "checkbox" ? ev.target.checked : ev.target.value;
+    setFormState({ ...formState, [ev.target.name]: value });
+    console.log("input changed!", ev.target.value, ev.target.checked);
   };
   return (
     <form autoComplete="off" className={classes.root} onSubmit={formSubmit}>
-      <div className={classes.row}>
-        <div>
-          <label htmlFor="firstName" className={classes.label}>
-            <span className={classes.span}>What is your first name?</span>
-          </label>
-          <input
-            id="name"
-            name="firstName"
-            placeholder="Enter your first name:"
-            value={formState.firstName}
-            onChange={inputChange}
-            className={classes.inputName}
-          />
-        </div>
-        <div>
-          <label htmlFor="lastName" className={classes.label}>
-            <span className={classes.span}>What is your name?</span>
-          </label>
-          <input
-            id="name"
-            name="lastName"
-            placeholder="Enter your last name:"
-            value={formState.lastName}
-            onChange={inputChange}
-            className={classes.inputName}
-          />
-        </div>
+      <div className={classes.column}>
+        <label htmlFor="firstName" className={classes.label}>
+          <span className={classes.span}>What is your first name?</span>
+        </label>
+        <input
+          id="firstName"
+          name="firstName"
+          placeholder="Enter your first name:"
+          value={formState.firstName}
+          onChange={inputChange}
+          className={classes.input}
+        />
+        {errors.firstName.length > 0 ? (
+          <p className={classes.error}>{errors.firstName}</p>
+        ) : null}
+      </div>
+      <div className={classes.column}>
+        <label htmlFor="lastName" className={classes.label}>
+          <span className={classes.span}>What is your name?</span>
+        </label>
+        <input
+          id="lastName"
+          name="lastName"
+          placeholder="Enter your last name:"
+          value={formState.lastName}
+          onChange={inputChange}
+          className={classes.input}
+        />
+        {errors.lastName.length > 0 ? (
+          <p className={classes.error}>{errors.lastName}</p>
+        ) : null}
       </div>
       <div className={classes.column}>
         <label htmlFor="email" className={classes.label}>
@@ -142,6 +205,9 @@ export default function Form(props) {
           onChange={inputChange}
           className={classes.input}
         />
+        {errors.email.length > 0 ? (
+          <p className={classes.error}>{errors.email}</p>
+        ) : null}
       </div>
       <div className={classes.column}>
         <label htmlFor="password" className={classes.label}>
@@ -152,24 +218,37 @@ export default function Form(props) {
           name="password"
           type="password"
           placeholder="Create a password:"
-          value={formState.name}
+          value={formState.password}
           onChange={inputChange}
           className={classes.input}
         />
+        {errors.password.length > 0 ? (
+          <p className={classes.error}>{errors.password}</p>
+        ) : null}
       </div>
       <div className={classes.rowTerms}>
-        <label htmlFor="terms_of_service" className={classes.termsLabel}>
+        <label htmlFor="terms" className={classes.termsLabel}>
           {"Do you agree to the"}
           <br />
           {"Terms of Service?"}
-          <input
-            type="checkbox"
-            id="terms_of_service"
-            name="terms_of_service"
-            value={formState.terms_of_service}
-            onChange={inputChange}
-          />
+          <br />
+          <p className={classes.finePrint}>
+            {
+              "*Terms of Service Currently unavailable for reading. We apologize for the inconvenience."
+            }
+          </p>
         </label>
+        <input
+          type="checkbox"
+          id="terms"
+          name="terms"
+          checked={formState.terms}
+          onChange={inputChange}
+          className={classes.termsInput}
+        />
+        {/* {errors.terms.length > 0 ? (
+          <p className={classes.error}>{errors.terms}</p>
+        ) : null} */}
       </div>
       <div className={classes.column}>
         <label htmlFor="submit" className={classes.label} />
